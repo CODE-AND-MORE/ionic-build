@@ -16330,8 +16330,8 @@ class Nav {
     const mode = getIonMode$1(this);
     const enteringEl = enteringView.element;
     const leavingEl = leavingView && leavingView.element;
-    const animationOpts = Object.assign({ mode, showGoBack: this.canGoBackSync(enteringView), baseEl: this.el, animationBuilder: this.animation || opts.animationBuilder || config.get('navAnimation'), progressCallback, animated: this.animated && config.getBoolean('animated', true), enteringEl,
-      leavingEl }, opts);
+    const animationOpts = Object.assign(Object.assign({ mode, showGoBack: this.canGoBackSync(enteringView), baseEl: this.el, progressCallback, animated: this.animated && config.getBoolean('animated', true), enteringEl,
+      leavingEl }, opts), { animationBuilder: opts.animationBuilder || this.animation || config.get('navAnimation') });
     const { hasCompleted } = await transition$2(animationOpts);
     return this.transitionFinish(hasCompleted, enteringView, leavingView, opts);
   }
