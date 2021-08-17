@@ -1,11 +1,8 @@
 import { Component, Element, Event, Host, Method, Prop, Watch, h } from '@stencil/core';
 import { getIonMode } from '../../global/ionic-global';
+import { componentOnReady } from '../../utils/helpers';
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
- *
- * @slot - Default slot for adding children of .swiper-wrapper, so all ion-slide should use this slot.
- * @slot top - Content is placed within .swiper-container, before .swiper-wrapper.
- * @slot bottom - Content is placed within .swiper-container, after .swiper-wrapper.
  */
 export class Slides {
   constructor() {
@@ -29,8 +26,10 @@ export class Slides {
   async optionsChanged() {
     if (this.swiperReady) {
       const swiper = await this.getSwiper();
-      Object.assign(swiper.params, this.options);
-      await this.update();
+      if (swiper === null || swiper === void 0 ? void 0 : swiper.params) {
+        Object.assign(swiper.params, this.options);
+        await this.update();
+      }
     }
   }
   connectedCallback() {
@@ -45,7 +44,7 @@ export class Slides {
         childList: true,
         subtree: true
       });
-      this.el.componentOnReady().then(() => {
+      componentOnReady(this.el, () => {
         if (!this.didInit) {
           this.didInit = true;
           this.initSwiper();
@@ -367,10 +366,8 @@ export class Slides {
         [`slides-${mode}`]: true,
         'swiper-container': true
       } },
-      h("slot", { name: "top" }),
       h("div", { class: "swiper-wrapper" },
         h("slot", null)),
-      h("slot", { name: "bottom" }),
       this.pager && h("div", { class: "swiper-pagination", ref: el => this.paginationEl = el }),
       this.scrollbar && h("div", { class: "swiper-scrollbar", ref: el => this.scrollbarEl = el })));
   }
@@ -1045,5 +1042,5 @@ export class Slides {
     }]; }
 }
 const waitForSlides = (el) => {
-  return Promise.all(Array.from(el.querySelectorAll('ion-slide')).map(s => s.componentOnReady()));
+  return Promise.all(Array.from(el.querySelectorAll('ion-slide')).map(s => new Promise(resolve => componentOnReady(s, resolve))));
 };

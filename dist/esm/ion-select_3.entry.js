@@ -1,9 +1,9 @@
-import { r as registerInstance, e as createEvent, h, H as Host, i as getElement } from './index-e806d1f6.js';
-import { b as getIonMode } from './ionic-global-9d5c8ee3.js';
-import { f as findItemLabel, c as getAriaLabel, d as renderHiddenInput } from './helpers-90f46169.js';
-import './hardware-back-button-389954a0.js';
-import { c as popoverController, b as actionSheetController, a as alertController, s as safeCall } from './overlays-7a1610a2.js';
+import { r as registerInstance, e as createEvent, h, H as Host, i as getElement } from './index-7a8b7a1c.js';
+import { b as getIonMode } from './ionic-global-63a97a32.js';
+import { h as findItemLabel, d as getAriaLabel, e as renderHiddenInput } from './helpers-dd7e4b7b.js';
+import { c as popoverController, b as actionSheetController, a as alertController, s as safeCall } from './overlays-e9ccff30.js';
 import { h as hostContext, g as getClassMap } from './theme-ff3fc52f.js';
+import './hardware-back-button-4a6b37fb.js';
 
 const watchForOptions = (containerEl, tagName, onChange) => {
   /* tslint:disable-next-line */
@@ -361,6 +361,7 @@ const Select = class {
         [mode]: true,
         'in-item': hostContext('ion-item', el),
         'select-disabled': disabled,
+        'select-expanded': isExpanded
       } }, h("div", { "aria-hidden": "true", class: selectTextClasses, part: textPart }, selectText), h("div", { class: "select-icon", role: "presentation", part: "icon" }, h("div", { class: "select-icon-inner" })), h("label", { id: labelId }, displayLabel), h("button", { type: "button", disabled: disabled, id: inputId, "aria-labelledby": labelId, "aria-haspopup": "listbox", "aria-expanded": `${isExpanded}`, onFocus: this.onFocus, onBlur: this.onBlur, ref: (focusEl => this.focusEl = focusEl) })));
   }
   get el() { return getElement(this); }

@@ -1,4 +1,5 @@
 import { Component, Element, Host, Listen, Method, Prop, State, Watch, forceUpdate, h, readTask, writeTask } from '@stencil/core';
+import { componentOnReady } from '../../utils/helpers';
 import { CELL_TYPE_FOOTER, CELL_TYPE_HEADER, CELL_TYPE_ITEM } from './constants';
 import { calcCells, calcHeightIndex, doRender, findCellIndex, getRange, getShouldUpdate, getViewport, inplaceUpdate, positionForIndex, resizeBuffer, updateVDom } from './virtual-scroll-utils';
 export class VirtualScroll {
@@ -181,8 +182,8 @@ export class VirtualScroll {
         this.setCellHeight(cell, height);
       }
     };
-    if (node && node.componentOnReady) {
-      node.componentOnReady().then(update);
+    if (node) {
+      componentOnReady(node, update);
     }
     else {
       update();

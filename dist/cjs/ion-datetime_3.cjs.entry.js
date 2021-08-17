@@ -2,14 +2,14 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-const index = require('./index-a35cc20f.js');
-const ionicGlobal = require('./ionic-global-75ba08dd.js');
-const helpers = require('./helpers-7e840ed2.js');
-const animation = require('./animation-9929f2ae.js');
-require('./hardware-back-button-87eee3af.js');
-const overlays = require('./overlays-deffa27d.js');
-const haptic = require('./haptic-9f199ada.js');
+const index = require('./index-a0a08b2a.js');
+const ionicGlobal = require('./ionic-global-06f21c1a.js');
+const helpers = require('./helpers-d381ec4d.js');
+const overlays = require('./overlays-59863ad4.js');
 const theme = require('./theme-30b7a575.js');
+const animation = require('./animation-13cbbb20.js');
+const haptic = require('./haptic-9f199ada.js');
+require('./hardware-back-button-148ce546.js');
 
 /**
  * Gets a date value given a format
@@ -942,7 +942,7 @@ const Datetime = class {
       label.id = labelId;
     }
     helpers.renderHiddenInput(true, el, this.name, this.value, this.disabled);
-    return (index.h(index.Host, { onClick: this.onClick, "aria-disabled": disabled ? 'true' : null, "aria-expanded": `${isExpanded}`, "aria-haspopup": "true", "aria-labelledby": labelId, class: {
+    return (index.h(index.Host, { onClick: this.onClick, "aria-disabled": disabled ? 'true' : null, "aria-expanded": `${isExpanded}`, "aria-haspopup": "true", "aria-labelledby": label ? labelId : null, class: {
         [mode]: true,
         'datetime-disabled': disabled,
         'datetime-readonly': readonly,
@@ -1223,7 +1223,7 @@ const PickerColumnCmp = class {
     }
     this.rotateFactor = pickerRotateFactor;
     this.scaleFactor = pickerScaleFactor;
-    this.gesture = (await Promise.resolve().then(function () { return require('./index-98d43f07.js'); })).createGesture({
+    this.gesture = (await Promise.resolve().then(function () { return require('./index-a1dd5c93.js'); })).createGesture({
       el: this.el,
       gestureName: 'picker-swipe',
       gesturePriority: 100,

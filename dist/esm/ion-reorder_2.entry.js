@@ -1,5 +1,5 @@
-import { r as registerInstance, h, H as Host, i as getElement, e as createEvent } from './index-e806d1f6.js';
-import { b as getIonMode } from './ionic-global-9d5c8ee3.js';
+import { r as registerInstance, h, H as Host, i as getElement, e as createEvent } from './index-7a8b7a1c.js';
+import { b as getIonMode } from './ionic-global-63a97a32.js';
 import { a as hapticSelectionStart, b as hapticSelectionChanged, h as hapticSelectionEnd } from './haptic-27b3f981.js';
 
 const reorderIosCss = ":host([slot]){display:none;line-height:0;z-index:100}.reorder-icon{display:block;font-size:22px}.reorder-icon{font-size:34px;opacity:0.4}";
@@ -60,7 +60,7 @@ const ReorderGroup = class {
     if (contentEl) {
       this.scrollEl = await contentEl.getScrollElement();
     }
-    this.gesture = (await import('./index-f49d994d.js')).createGesture({
+    this.gesture = (await import('./index-34cb2743.js')).createGesture({
       el: this.el,
       gestureName: 'reorder',
       gesturePriority: 110,

@@ -2,15 +2,15 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-const index = require('./index-a35cc20f.js');
-const ionicGlobal = require('./ionic-global-75ba08dd.js');
-const helpers = require('./helpers-7e840ed2.js');
-require('./animation-9929f2ae.js');
+const index = require('./index-a0a08b2a.js');
+const ionicGlobal = require('./ionic-global-06f21c1a.js');
 const cubicBezier = require('./cubic-bezier-0b2ccc35.js');
 const gestureController = require('./gesture-controller-29adda71.js');
-require('./hardware-back-button-87eee3af.js');
-const index$1 = require('./index-f22257b2.js');
+const helpers = require('./helpers-d381ec4d.js');
+const index$1 = require('./index-ea5f8e16.js');
 const theme = require('./theme-30b7a575.js');
+require('./hardware-back-button-148ce546.js');
+require('./animation-13cbbb20.js');
 
 const menuIosCss = ":host{--width:304px;--min-width:auto;--max-width:auto;--height:100%;--min-height:auto;--max-height:auto;--background:var(--ion-background-color, #fff);left:0;right:0;top:0;bottom:0;display:none;position:absolute;contain:strict}:host(.show-menu){display:block}.menu-inner{left:0;right:auto;top:0;bottom:0;-webkit-transform:translate3d(-9999px,  0,  0);transform:translate3d(-9999px,  0,  0);display:-ms-flexbox;display:flex;position:absolute;-ms-flex-direction:column;flex-direction:column;-ms-flex-pack:justify;justify-content:space-between;width:var(--width);min-width:var(--min-width);max-width:var(--max-width);height:var(--height);min-height:var(--min-height);max-height:var(--max-height);background:var(--background);contain:strict}[dir=rtl] .menu-inner,:host-context([dir=rtl]) .menu-inner{left:unset;right:unset;left:auto;right:0}[dir=rtl] .menu-inner,:host-context([dir=rtl]) .menu-inner{-webkit-transform:translate3d(calc(-1 * -9999px),  0,  0);transform:translate3d(calc(-1 * -9999px),  0,  0)}:host(.menu-side-start) .menu-inner{--ion-safe-area-right:0px;right:auto;left:0}:host(.menu-side-end) .menu-inner{--ion-safe-area-left:0px;right:0;left:auto;}ion-backdrop{display:none;opacity:0.01;z-index:-1}@media (max-width: 340px){.menu-inner{--width:264px}}:host(.menu-type-reveal){z-index:0}:host(.menu-type-reveal.show-menu) .menu-inner{-webkit-transform:translate3d(0,  0,  0);transform:translate3d(0,  0,  0)}:host(.menu-type-overlay){z-index:1000}:host(.menu-type-overlay) .show-backdrop{display:block;cursor:pointer}:host(.menu-pane-visible){width:var(--width);min-width:var(--min-width);max-width:var(--max-width)}:host(.menu-pane-visible) .menu-inner{left:0;right:0;width:auto;-webkit-transform:none !important;transform:none !important;-webkit-box-shadow:none !important;box-shadow:none !important}:host(.menu-pane-visible) ion-backdrop{display:hidden !important;}:host(.menu-type-push){z-index:1000}:host(.menu-type-push) .show-backdrop{display:block}";
 
@@ -112,7 +112,7 @@ AFTER:
     this.sideChanged();
     // register this menu with the app's menu controller
     index$1.menuController._register(this);
-    this.gesture = (await Promise.resolve().then(function () { return require('./index-98d43f07.js'); })).createGesture({
+    this.gesture = (await Promise.resolve().then(function () { return require('./index-a1dd5c93.js'); })).createGesture({
       el: document,
       gestureName: 'menu-swipe',
       gesturePriority: 30,
@@ -467,6 +467,7 @@ const menuButtonMdCss = ":host{--background:transparent;--color-focused:currentC
 const MenuButton = class {
   constructor(hostRef) {
     index.registerInstance(this, hostRef);
+    this.inheritedAttributes = {};
     this.visible = false;
     /**
      * If `true`, the user cannot interact with the menu button.
@@ -484,6 +485,9 @@ const MenuButton = class {
       return index$1.menuController.toggle(this.menu);
     };
   }
+  componentWillLoad() {
+    this.inheritedAttributes = helpers.inheritAttributes(this.el, ['aria-label']);
+  }
   componentDidLoad() {
     this.visibilityChanged();
   }
@@ -491,13 +495,14 @@ const MenuButton = class {
     this.visible = await updateVisibility(this.menu);
   }
   render() {
-    const { color, disabled } = this;
+    const { color, disabled, inheritedAttributes } = this;
     const mode = ionicGlobal.getIonMode(this);
     const menuIcon = ionicGlobal.config.get('menuIcon', mode === 'ios' ? 'menu-outline' : 'menu-sharp');
     const hidden = this.autoHide && !this.visible;
     const attrs = {
       type: this.type
     };
+    const ariaLabel = inheritedAttributes['aria-label'] || 'menu';
     return (index.h(index.Host, { onClick: this.onClick, "aria-disabled": disabled ? 'true' : null, "aria-hidden": hidden ? 'true' : null, class: theme.createColorClasses(color, {
         [mode]: true,
         'button': true,
@@ -507,7 +512,7 @@ const MenuButton = class {
         'in-toolbar-color': theme.hostContext('ion-toolbar[color]', this.el),
         'ion-activatable': true,
         'ion-focusable': true
-      }) }, index.h("button", Object.assign({}, attrs, { disabled: disabled, class: "button-native", part: "native", "aria-label": "menu" }), index.h("span", { class: "button-inner" }, index.h("slot", null, index.h("ion-icon", { part: "icon", icon: menuIcon, mode: mode, lazy: false, "aria-hidden": "true" }))), mode === 'md' && index.h("ion-ripple-effect", { type: "unbounded" }))));
+      }) }, index.h("button", Object.assign({}, attrs, { disabled: disabled, class: "button-native", part: "native", "aria-label": ariaLabel }), index.h("span", { class: "button-inner" }, index.h("slot", null, index.h("ion-icon", { part: "icon", icon: menuIcon, mode: mode, lazy: false, "aria-hidden": "true" }))), mode === 'md' && index.h("ion-ripple-effect", { type: "unbounded" }))));
   }
   get el() { return index.getElement(this); }
 };

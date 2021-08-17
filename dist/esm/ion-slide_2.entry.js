@@ -1,5 +1,6 @@
-import { r as registerInstance, h, H as Host, e as createEvent, i as getElement } from './index-e806d1f6.js';
-import { b as getIonMode } from './ionic-global-9d5c8ee3.js';
+import { r as registerInstance, h, H as Host, e as createEvent, i as getElement } from './index-7a8b7a1c.js';
+import { b as getIonMode } from './ionic-global-63a97a32.js';
+import { c as componentOnReady } from './helpers-dd7e4b7b.js';
 
 const slideCss = "ion-slide{display:block;width:100%;height:100%}.slide-zoom{display:block;width:100%;text-align:center}.swiper-slide{display:-ms-flexbox;display:flex;position:relative;-ms-flex-negative:0;flex-shrink:0;-ms-flex-align:center;align-items:center;-ms-flex-pack:center;justify-content:center;width:100%;height:100%;font-size:18px;text-align:center;-webkit-box-sizing:border-box;box-sizing:border-box}.swiper-slide img{width:auto;max-width:100%;height:auto;max-height:100%}";
 
@@ -61,8 +62,10 @@ const Slides = class {
   async optionsChanged() {
     if (this.swiperReady) {
       const swiper = await this.getSwiper();
-      Object.assign(swiper.params, this.options);
-      await this.update();
+      if (swiper === null || swiper === void 0 ? void 0 : swiper.params) {
+        Object.assign(swiper.params, this.options);
+        await this.update();
+      }
     }
   }
   connectedCallback() {
@@ -77,7 +80,7 @@ const Slides = class {
         childList: true,
         subtree: true
       });
-      this.el.componentOnReady().then(() => {
+      componentOnReady(this.el, () => {
         if (!this.didInit) {
           this.didInit = true;
           this.initSwiper();
@@ -252,7 +255,7 @@ const Slides = class {
     const finalOptions = this.normalizeOptions();
     // init swiper core
     // @ts-ignore
-    const { Swiper } = await import('./swiper.bundle-95afeea2.js');
+    const { Swiper } = await import('./swiper.bundle-6c5e7804.js');
     await waitForSlides(this.el);
     const swiper = new Swiper(this.el, finalOptions);
     this.swiperReady = true;
@@ -398,7 +401,7 @@ const Slides = class {
         // Used internally for styling
         [`slides-${mode}`]: true,
         'swiper-container': true
-      } }, h("slot", { name: "top" }), h("div", { class: "swiper-wrapper" }, h("slot", null)), h("slot", { name: "bottom" }), this.pager && h("div", { class: "swiper-pagination", ref: el => this.paginationEl = el }), this.scrollbar && h("div", { class: "swiper-scrollbar", ref: el => this.scrollbarEl = el })));
+      } }, h("div", { class: "swiper-wrapper" }, h("slot", null)), this.pager && h("div", { class: "swiper-pagination", ref: el => this.paginationEl = el }), this.scrollbar && h("div", { class: "swiper-scrollbar", ref: el => this.scrollbarEl = el })));
   }
   static get assetsDirs() { return ["swiper"]; }
   get el() { return getElement(this); }
@@ -407,7 +410,7 @@ const Slides = class {
   }; }
 };
 const waitForSlides = (el) => {
-  return Promise.all(Array.from(el.querySelectorAll('ion-slide')).map(s => s.componentOnReady()));
+  return Promise.all(Array.from(el.querySelectorAll('ion-slide')).map(s => new Promise(resolve => componentOnReady(s, resolve))));
 };
 Slides.style = {
   ios: slidesIosCss,

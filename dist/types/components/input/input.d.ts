@@ -31,6 +31,7 @@ export declare class Input implements ComponentInterface {
   accept?: string;
   /**
    * Indicates whether and how the text value should be automatically capitalized as it is entered/edited by the user.
+   * Available options: `"off"`, `"none"`, `"on"`, `"sentences"`, `"words"`, `"characters"`.
    */
   autocapitalize: string;
   /**
@@ -137,10 +138,6 @@ export declare class Input implements ComponentInterface {
    */
   value?: string | number | null;
   /**
-   * Update the native input element when the value changes
-   */
-  protected valueChanged(): void;
-  /**
    * Emitted when a keyboard input occurred.
    */
   ionInput: EventEmitter<KeyboardEvent>;
@@ -161,6 +158,14 @@ export declare class Input implements ComponentInterface {
    * @internal
    */
   ionStyle: EventEmitter<StyleEventDetail>;
+  /**
+   * Update the item classes when the placeholder changes
+   */
+  protected placeholderChanged(): void;
+  /**
+   * Update the native input element when the value changes
+   */
+  protected valueChanged(): void;
   componentWillLoad(): void;
   connectedCallback(): void;
   disconnectedCallback(): void;

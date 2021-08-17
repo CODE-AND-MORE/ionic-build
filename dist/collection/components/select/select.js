@@ -323,6 +323,7 @@ export class Select {
         [mode]: true,
         'in-item': hostContext('ion-item', el),
         'select-disabled': disabled,
+        'select-expanded': isExpanded
       } },
       h("div", { "aria-hidden": "true", class: selectTextClasses, part: textPart }, selectText),
       h("div", { class: "select-icon", role: "presentation", part: "icon" },

@@ -15,6 +15,7 @@ export declare class Button implements ComponentInterface, AnchorInterface, Butt
   private inItem;
   private inListHeader;
   private inToolbar;
+  private inheritedAttributes;
   el: HTMLElement;
   /**
    * The color to use from your application's color palette.

@@ -1,4 +1,5 @@
-import { r as registerInstance, f as readTask, c as writeTask, j as forceUpdate, h, H as Host, i as getElement } from './index-e806d1f6.js';
+import { r as registerInstance, f as readTask, c as writeTask, j as forceUpdate, h, H as Host, i as getElement } from './index-7a8b7a1c.js';
+import { c as componentOnReady } from './helpers-dd7e4b7b.js';
 
 const CELL_TYPE_ITEM = 'item';
 const CELL_TYPE_HEADER = 'header';
@@ -434,8 +435,8 @@ const VirtualScroll = class {
         this.setCellHeight(cell, height);
       }
     };
-    if (node && node.componentOnReady) {
-      node.componentOnReady().then(update);
+    if (node) {
+      componentOnReady(node, update);
     }
     else {
       update();

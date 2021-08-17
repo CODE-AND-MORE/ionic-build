@@ -1,13 +1,14 @@
 import { writeTask } from '@stencil/core';
 import { createAnimation } from '../../utils/animation/animation';
+import { componentOnReady } from '../../utils/helpers';
 import { isPlatform } from '../../utils/platform';
 export const getRefresherAnimationType = (contentEl) => {
   const previousSibling = contentEl.previousElementSibling;
   const hasHeader = previousSibling !== null && previousSibling.tagName === 'ION-HEADER';
   return hasHeader ? 'translate' : 'scale';
 };
-export const createPullingAnimation = (type, pullingSpinner) => {
-  return type === 'scale' ? createScaleAnimation(pullingSpinner) : createTranslateAnimation(pullingSpinner);
+export const createPullingAnimation = (type, pullingSpinner, refresherEl) => {
+  return type === 'scale' ? createScaleAnimation(pullingSpinner, refresherEl) : createTranslateAnimation(pullingSpinner, refresherEl);
 };
 const createBaseAnimation = (pullingRefresherIcon) => {
   const spinner = pullingRefresherIcon.querySelector('ion-spinner');
@@ -66,22 +67,40 @@ const createBaseAnimation = (pullingRefresherIcon) => {
   }
   return baseAnimation.addAnimation([spinnerArrowContainerAnimation, circleInnerAnimation, circleOuterAnimation]);
 };
-const createScaleAnimation = (pullingRefresherIcon) => {
-  const height = pullingRefresherIcon.clientHeight;
+const createScaleAnimation = (pullingRefresherIcon, refresherEl) => {
+  /**
+   * Do not take the height of the refresher icon
+   * because at this point the DOM has not updated,
+   * so the refresher icon is still hidden with
+   * display: none.
+   * The `ion-refresher` container height
+   * is roughly the amount we need to offset
+   * the icon by when pulling down.
+   */
+  const height = refresherEl.clientHeight;
   const spinnerAnimation = createAnimation()
     .addElement(pullingRefresherIcon)
     .keyframes([
-    { offset: 0, transform: `scale(0) translateY(-${height + 20}px)` },
+    { offset: 0, transform: `scale(0) translateY(-${height}px)` },
     { offset: 1, transform: 'scale(1) translateY(100px)' }
   ]);
   return createBaseAnimation(pullingRefresherIcon).addAnimation([spinnerAnimation]);
 };
-const createTranslateAnimation = (pullingRefresherIcon) => {
-  const height = pullingRefresherIcon.clientHeight;
+const createTranslateAnimation = (pullingRefresherIcon, refresherEl) => {
+  /**
+   * Do not take the height of the refresher icon
+   * because at this point the DOM has not updated,
+   * so the refresher icon is still hidden with
+   * display: none.
+   * The `ion-refresher` container height
+   * is roughly the amount we need to offset
+   * the icon by when pulling down.
+   */
+  const height = refresherEl.clientHeight;
   const spinnerAnimation = createAnimation()
     .addElement(pullingRefresherIcon)
     .keyframes([
-    { offset: 0, transform: `translateY(-${height + 20}px)` },
+    { offset: 0, transform: `translateY(-${height}px)` },
     { offset: 1, transform: 'translateY(100px)' }
   ]);
   return createBaseAnimation(pullingRefresherIcon).addAnimation([spinnerAnimation]);
@@ -128,7 +147,12 @@ export const translateElement = (el, value) => {
 };
 // Utils
 // -----------------------------
-export const shouldUseNativeRefresher = (referenceEl, mode) => {
+export const shouldUseNativeRefresher = async (referenceEl, mode) => {
+  const refresherContent = referenceEl.querySelector('ion-refresher-content');
+  if (!refresherContent) {
+    return Promise.resolve(false);
+  }
+  await new Promise(resolve => componentOnReady(refresherContent, resolve));
   const pullingSpinner = referenceEl.querySelector('ion-refresher-content .refresher-pulling ion-spinner');
   const refreshingSpinner = referenceEl.querySelector('ion-refresher-content .refresher-refreshing ion-spinner');
   return (pullingSpinner !== null &&

@@ -8,6 +8,7 @@ import { ButtonInterface } from '../../utils/element-interface';
  * @part icon - The menu button icon (uses ion-icon).
  */
 export declare class MenuButton implements ComponentInterface, ButtonInterface {
+  private inheritedAttributes;
   el: HTMLIonSegmentElement;
   visible: boolean;
   /**
@@ -32,6 +33,7 @@ export declare class MenuButton implements ComponentInterface, ButtonInterface {
    * The type of the button.
    */
   type: 'submit' | 'reset' | 'button';
+  componentWillLoad(): void;
   componentDidLoad(): void;
   visibilityChanged(): Promise<void>;
   private onClick;

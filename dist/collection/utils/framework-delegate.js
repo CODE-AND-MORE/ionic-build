@@ -1,3 +1,4 @@
+import { componentOnReady } from './helpers';
 export const attachComponent = async (delegate, container, component, cssClasses, componentProps) => {
   if (delegate) {
     return delegate.attachViewToDom(container, component, componentProps, cssClasses);
@@ -15,9 +16,7 @@ export const attachComponent = async (delegate, container, component, cssClasses
     Object.assign(el, componentProps);
   }
   container.appendChild(el);
-  if (el.componentOnReady) {
-    await el.componentOnReady();
-  }
+  await new Promise(resolve => componentOnReady(el, resolve));
   return el;
 };
 export const detachComponent = (delegate, element) => {

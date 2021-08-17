@@ -1,5 +1,6 @@
 import { Build, writeTask } from '@stencil/core';
 import { LIFECYCLE_DID_ENTER, LIFECYCLE_DID_LEAVE, LIFECYCLE_WILL_ENTER, LIFECYCLE_WILL_LEAVE } from '../../components/nav/constants';
+import { componentOnReady } from '../helpers';
 const iosTransitionAnimation = () => import('./ios.transition');
 const mdTransitionAnimation = () => import('./md.transition');
 export const transition = (opts) => {
@@ -30,8 +31,16 @@ const beforeTransition = (opts) => {
     enteringEl.classList.remove('can-go-back');
   }
   setPageHidden(enteringEl, false);
+  /**
+   * When transitioning, the page should not
+   * respond to click events. This resolves small
+   * issues like users double tapping the ion-back-button.
+   * These pointer events are removed in `afterTransition`.
+   */
+  enteringEl.style.setProperty('pointer-events', 'none');
   if (leavingEl) {
     setPageHidden(leavingEl, false);
+    leavingEl.style.setProperty('pointer-events', 'none');
   }
 };
 const runTransition = async (opts) => {
@@ -45,8 +54,10 @@ const afterTransition = (opts) => {
   const enteringEl = opts.enteringEl;
   const leavingEl = opts.leavingEl;
   enteringEl.classList.remove('ion-page-invisible');
+  enteringEl.style.removeProperty('pointer-events');
   if (leavingEl !== undefined) {
     leavingEl.classList.remove('ion-page-invisible');
+    leavingEl.style.removeProperty('pointer-events');
   }
 };
 const getAnimationBuilder = async (opts) => {
@@ -143,8 +154,8 @@ export const lifecycle = (el, eventName) => {
   }
 };
 const shallowReady = (el) => {
-  if (el && el.componentOnReady) {
-    return el.componentOnReady();
+  if (el) {
+    return new Promise(resolve => componentOnReady(el, resolve));
   }
   return Promise.resolve();
 };

@@ -2,12 +2,12 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-const index = require('./index-a35cc20f.js');
-const ionicGlobal = require('./ionic-global-75ba08dd.js');
-const helpers = require('./helpers-7e840ed2.js');
-require('./hardware-back-button-87eee3af.js');
-const overlays = require('./overlays-deffa27d.js');
+const index = require('./index-a0a08b2a.js');
+const ionicGlobal = require('./ionic-global-06f21c1a.js');
+const helpers = require('./helpers-d381ec4d.js');
+const overlays = require('./overlays-59863ad4.js');
 const theme = require('./theme-30b7a575.js');
+require('./hardware-back-button-148ce546.js');
 
 const watchForOptions = (containerEl, tagName, onChange) => {
   /* tslint:disable-next-line */
@@ -365,6 +365,7 @@ const Select = class {
         [mode]: true,
         'in-item': theme.hostContext('ion-item', el),
         'select-disabled': disabled,
+        'select-expanded': isExpanded
       } }, index.h("div", { "aria-hidden": "true", class: selectTextClasses, part: textPart }, selectText), index.h("div", { class: "select-icon", role: "presentation", part: "icon" }, index.h("div", { class: "select-icon-inner" })), index.h("label", { id: labelId }, displayLabel), index.h("button", { type: "button", disabled: disabled, id: inputId, "aria-labelledby": labelId, "aria-haspopup": "listbox", "aria-expanded": `${isExpanded}`, onFocus: this.onFocus, onBlur: this.onBlur, ref: (focusEl => this.focusEl = focusEl) })));
   }
   get el() { return index.getElement(this); }

@@ -22,6 +22,7 @@ export class Input {
     this.hasFocus = false;
     /**
      * Indicates whether and how the text value should be automatically capitalized as it is entered/edited by the user.
+     * Available options: `"off"`, `"none"`, `"on"`, `"sentences"`, `"words"`, `"characters"`.
      */
     this.autocapitalize = 'off';
     /**
@@ -137,6 +138,12 @@ export class Input {
     this.emitStyle();
   }
   /**
+   * Update the item classes when the placeholder changes
+   */
+  placeholderChanged() {
+    this.emitStyle();
+  }
+  /**
    * Update the native input element when the value changes
    */
   valueChanged() {
@@ -144,7 +151,7 @@ export class Input {
     this.ionChange.emit({ value: this.value == null ? this.value : this.value.toString() });
   }
   componentWillLoad() {
-    this.inheritedAttributes = inheritAttributes(this.el, ['tabindex', 'title']);
+    this.inheritedAttributes = inheritAttributes(this.el, ['aria-label', 'tabindex', 'title']);
   }
   connectedCallback() {
     this.emitStyle();
@@ -229,7 +236,7 @@ export class Input {
         'has-value': this.hasValue(),
         'has-focus': this.hasFocus
       }) },
-      h("input", Object.assign({ class: "native-input", ref: input => this.nativeInput = input, "aria-labelledby": labelId, disabled: this.disabled, accept: this.accept, autoCapitalize: this.autocapitalize, autoComplete: this.autocomplete, autoCorrect: this.autocorrect, autoFocus: this.autofocus, enterKeyHint: this.enterkeyhint, inputMode: this.inputmode, min: this.min, max: this.max, minLength: this.minlength, maxLength: this.maxlength, multiple: this.multiple, name: this.name, pattern: this.pattern, placeholder: this.placeholder || '', readOnly: this.readonly, required: this.required, spellcheck: this.spellcheck, step: this.step, size: this.size, type: this.type, value: value, onInput: this.onInput, onBlur: this.onBlur, onFocus: this.onFocus, onKeyDown: this.onKeydown }, this.inheritedAttributes)),
+      h("input", Object.assign({ class: "native-input", ref: input => this.nativeInput = input, "aria-labelledby": label ? labelId : null, disabled: this.disabled, accept: this.accept, autoCapitalize: this.autocapitalize, autoComplete: this.autocomplete, autoCorrect: this.autocorrect, autoFocus: this.autofocus, enterKeyHint: this.enterkeyhint, inputMode: this.inputmode, min: this.min, max: this.max, minLength: this.minlength, maxLength: this.maxlength, multiple: this.multiple, name: this.name, pattern: this.pattern, placeholder: this.placeholder || '', readOnly: this.readonly, required: this.required, spellcheck: this.spellcheck, step: this.step, size: this.size, type: this.type, value: value, onInput: this.onInput, onBlur: this.onBlur, onFocus: this.onFocus, onKeyDown: this.onKeydown }, this.inheritedAttributes)),
       (this.clearInput && !this.readonly && !this.disabled) && h("button", { "aria-label": "reset", type: "button", class: "input-clear-icon", onTouchStart: this.clearTextInput, onMouseDown: this.clearTextInput, onKeyDown: this.clearTextOnEnter })));
   }
   static get is() { return "ion-input"; }
@@ -284,7 +291,7 @@ export class Input {
         "text": "The color to use from your application's color palette.\nDefault options are: `\"primary\"`, `\"secondary\"`, `\"tertiary\"`, `\"success\"`, `\"warning\"`, `\"danger\"`, `\"light\"`, `\"medium\"`, and `\"dark\"`.\nFor more information on colors, see [theming](/docs/theming/basics)."
       },
       "attribute": "color",
-      "reflect": false
+      "reflect": true
     },
     "accept": {
       "type": "string",
@@ -315,7 +322,7 @@ export class Input {
       "optional": false,
       "docs": {
         "tags": [],
-        "text": "Indicates whether and how the text value should be automatically capitalized as it is entered/edited by the user."
+        "text": "Indicates whether and how the text value should be automatically capitalized as it is entered/edited by the user.\nAvailable options: `\"off\"`, `\"none\"`, `\"on\"`, `\"sentences\"`, `\"words\"`, `\"characters\"`."
       },
       "attribute": "autocapitalize",
       "reflect": false,
@@ -919,6 +926,9 @@ export class Input {
     }, {
       "propName": "disabled",
       "methodName": "disabledChanged"
+    }, {
+      "propName": "placeholder",
+      "methodName": "placeholderChanged"
     }, {
       "propName": "value",
       "methodName": "valueChanged"

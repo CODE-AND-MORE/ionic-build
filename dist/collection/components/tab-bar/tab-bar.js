@@ -1,4 +1,4 @@
-import { Component, Element, Event, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 import { getIonMode } from '../../global/ionic-global';
 import { createColorClasses } from '../../utils/theme';
 /**
@@ -21,16 +21,29 @@ export class TabBar {
       });
     }
   }
-  onKeyboardWillHide() {
-    setTimeout(() => this.keyboardVisible = false, 50);
-  }
-  onKeyboardWillShow() {
-    if (this.el.getAttribute('slot') !== 'top') {
-      this.keyboardVisible = true;
-    }
-  }
   componentWillLoad() {
     this.selectedTabChanged();
+  }
+  connectedCallback() {
+    if (typeof window !== 'undefined') {
+      this.keyboardWillShowHandler = () => {
+        if (this.el.getAttribute('slot') !== 'top') {
+          this.keyboardVisible = true;
+        }
+      };
+      this.keyboardWillHideHandler = () => {
+        setTimeout(() => this.keyboardVisible = false, 50);
+      };
+      window.addEventListener('keyboardWillShow', this.keyboardWillShowHandler);
+      window.addEventListener('keyboardWillHide', this.keyboardWillHideHandler);
+    }
+  }
+  disconnectedCallback() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('keyboardWillShow', this.keyboardWillShowHandler);
+      window.removeEventListener('keyboardWillHide', this.keyboardWillHideHandler);
+      this.keyboardWillShowHandler = this.keyboardWillHideHandler = undefined;
+    }
   }
   render() {
     const { color, translucent, keyboardVisible } = this;
@@ -73,7 +86,7 @@ export class TabBar {
         "text": "The color to use from your application's color palette.\nDefault options are: `\"primary\"`, `\"secondary\"`, `\"tertiary\"`, `\"success\"`, `\"warning\"`, `\"danger\"`, `\"light\"`, `\"medium\"`, and `\"dark\"`.\nFor more information on colors, see [theming](/docs/theming/basics)."
       },
       "attribute": "color",
-      "reflect": false
+      "reflect": true
     },
     "selectedTab": {
       "type": "string",
@@ -142,18 +155,5 @@ export class TabBar {
   static get watchers() { return [{
       "propName": "selectedTab",
       "methodName": "selectedTabChanged"
-    }]; }
-  static get listeners() { return [{
-      "name": "keyboardWillHide",
-      "method": "onKeyboardWillHide",
-      "target": "window",
-      "capture": false,
-      "passive": false
-    }, {
-      "name": "keyboardWillShow",
-      "method": "onKeyboardWillShow",
-      "target": "window",
-      "capture": false,
-      "passive": false
     }]; }
 }

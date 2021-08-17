@@ -1,9 +1,14 @@
-export const matchesRedirect = (input, route) => {
-  const { from, to } = route;
+// Returns whether the given redirect matches the given path segments.
+//
+// A redirect matches when the segments of the path and redirect.from are equal.
+// Note that segments are only checked until redirect.from contains a '*' which matches any path segment.
+// The path ['some', 'path', 'to', 'page'] matches both ['some', 'path', 'to', 'page'] and ['some', 'path', '*'].
+export const matchesRedirect = (path, redirect) => {
+  const { from, to } = redirect;
   if (to === undefined) {
     return false;
   }
-  if (from.length > input.length) {
+  if (from.length > path.length) {
     return false;
   }
   for (let i = 0; i < from.length; i++) {
@@ -11,14 +16,15 @@ export const matchesRedirect = (input, route) => {
     if (expected === '*') {
       return true;
     }
-    if (expected !== input[i]) {
+    if (expected !== path[i]) {
       return false;
     }
   }
-  return from.length === input.length;
+  return from.length === path.length;
 };
-export const routeRedirect = (path, routes) => {
-  return routes.find(route => matchesRedirect(path, route));
+// Returns the first redirect matching the path segments or undefined when no match found.
+export const findRouteRedirect = (path, redirects) => {
+  return redirects.find(redirect => matchesRedirect(path, redirect));
 };
 export const matchesIDs = (ids, chain) => {
   const len = Math.min(ids.length, chain.length);
@@ -75,17 +81,10 @@ export const matchesPath = (inputPath, chain) => {
   }
   return chain;
 };
+// Merges the route parameter objects.
+// Returns undefined when both parameters are undefined.
 export const mergeParams = (a, b) => {
-  if (!a && b) {
-    return b;
-  }
-  else if (a && !b) {
-    return a;
-  }
-  else if (a && b) {
-    return Object.assign(Object.assign({}, a), b);
-  }
-  return undefined;
+  return a || b ? Object.assign(Object.assign({}, a), b) : undefined;
 };
 export const routerIDsToChain = (ids, chains) => {
   let match = null;

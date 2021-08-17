@@ -1,7 +1,7 @@
 import { config } from '../global/config';
 import { getIonMode } from '../global/ionic-global';
 import { OVERLAY_BACK_BUTTON_PRIORITY } from './hardware-back-button';
-import { addEventListener, getElementRoot, removeEventListener } from './helpers';
+import { addEventListener, componentOnReady, getElementRoot, removeEventListener } from './helpers';
 let lastId = 0;
 export const activeAnimations = new WeakMap();
 const createController = (tagName) => {
@@ -46,7 +46,7 @@ export const createOverlay = (tagName, opts) => {
       Object.assign(element, opts);
       // append the overlay element to the document body
       getAppRoot(document).appendChild(element);
-      return element.componentOnReady();
+      return new Promise(resolve => componentOnReady(element, resolve));
     });
   }
   return Promise.resolve();
@@ -211,10 +211,46 @@ export const getOverlay = (doc, overlayTag, id) => {
     ? overlays[overlays.length - 1]
     : overlays.find(o => o.id === id);
 };
+/**
+ * When an overlay is presented, the main
+ * focus is the overlay not the page content.
+ * We need to remove the page content from the
+ * accessibility tree otherwise when
+ * users use "read screen from top" gestures with
+ * TalkBack and VoiceOver, the screen reader will begin
+ * to read the content underneath the overlay.
+ *
+ * We need a container where all page components
+ * exist that is separate from where the overlays
+ * are added in the DOM. For most apps, this element
+ * is the top most ion-router-outlet. In the event
+ * that devs are not using a router,
+ * they will need to add the "ion-view-container-root"
+ * id to the element that contains all of their views.
+ *
+ * TODO: If Framework supports having multiple top
+ * level router outlets we would need to update this.
+ * Example: One outlet for side menu and one outlet
+ * for main content.
+ */
+export const setRootAriaHidden = (hidden = false) => {
+  const root = getAppRoot(document);
+  const viewContainer = root.querySelector('ion-router-outlet, ion-nav, #ion-view-container-root');
+  if (!viewContainer) {
+    return;
+  }
+  if (hidden) {
+    viewContainer.setAttribute('aria-hidden', 'true');
+  }
+  else {
+    viewContainer.removeAttribute('aria-hidden');
+  }
+};
 export const present = async (overlay, name, iosEnterAnimation, mdEnterAnimation, opts) => {
   if (overlay.presented) {
     return;
   }
+  setRootAriaHidden(true);
   overlay.presented = true;
   overlay.willPresent.emit();
   const mode = getIonMode(overlay);
@@ -268,6 +304,7 @@ export const dismiss = async (overlay, data, role, name, iosLeaveAnimation, mdLe
   if (!overlay.presented) {
     return false;
   }
+  setRootAriaHidden(false);
   overlay.presented = false;
   try {
     // Overlay contents should not be clickable during dismiss

@@ -1,4 +1,24 @@
 /**
+ * Waits for a component to be ready for
+ * both custom element and non-custom element builds.
+ * If non-custom element build, el.componentOnReady
+ * will be used.
+ * For custom element builds, we wait a frame
+ * so that the inner contents of the component
+ * have a chance to render.
+ *
+ * Use this utility rather than calling
+ * el.componentOnReady yourself.
+ */
+export const componentOnReady = (el, callback) => {
+  if (el.componentOnReady) {
+    el.componentOnReady().then((resolvedEl) => callback(resolvedEl));
+  }
+  else {
+    raf(() => callback(el));
+  }
+};
+/**
  * Elements inside of web components sometimes need to inherit global attributes
  * set on the host. For example, the inner input in `ion-input` should inherit
  * the `title` attribute that developers set directly on `ion-input`. This
@@ -113,7 +133,7 @@ export const getAriaLabel = (componentEl, inputId) => {
     ? labelledBy
     : inputId + '-lbl';
   let label = labelledBy !== null && labelledBy.trim() !== ''
-    ? document.querySelector(`#${labelledBy}`)
+    ? document.getElementById(labelledBy)
     : findItemLabel(componentEl);
   if (label) {
     if (labelledBy === null) {
@@ -125,9 +145,14 @@ export const getAriaLabel = (componentEl, inputId) => {
     // one by setting an id on the component and using the label element
   }
   else if (componentId.trim() !== '') {
-    label = document.querySelector(`label[for=${componentId}]`);
+    label = document.querySelector(`label[for="${componentId}"]`);
     if (label) {
-      label.id = labelId = `${componentId}-lbl`;
+      if (label.id !== '') {
+        labelId = label.id;
+      }
+      else {
+        label.id = labelId = `${componentId}-lbl`;
+      }
       labelText = label.textContent;
     }
   }

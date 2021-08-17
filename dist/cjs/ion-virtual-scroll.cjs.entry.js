@@ -2,7 +2,8 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-const index = require('./index-a35cc20f.js');
+const index = require('./index-a0a08b2a.js');
+const helpers = require('./helpers-d381ec4d.js');
 
 const CELL_TYPE_ITEM = 'item';
 const CELL_TYPE_HEADER = 'header';
@@ -438,8 +439,8 @@ const VirtualScroll = class {
         this.setCellHeight(cell, height);
       }
     };
-    if (node && node.componentOnReady) {
-      node.componentOnReady().then(update);
+    if (node) {
+      helpers.componentOnReady(node, update);
     }
     else {
       update();

@@ -1,6 +1,6 @@
 import { Component, Element, Event, Host, Prop, h } from '@stencil/core';
 import { getIonMode } from '../../global/ionic-global';
-import { hasShadowDom } from '../../utils/helpers';
+import { hasShadowDom, inheritAttributes } from '../../utils/helpers';
 import { createColorClasses, hostContext, openURL } from '../../utils/theme';
 /**
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
@@ -17,6 +17,7 @@ export class Button {
     this.inItem = false;
     this.inListHeader = false;
     this.inToolbar = false;
+    this.inheritedAttributes = {};
     /**
      * The type of button.
      */
@@ -69,6 +70,7 @@ export class Button {
     this.inToolbar = !!this.el.closest('ion-buttons');
     this.inListHeader = !!this.el.closest('ion-list-header');
     this.inItem = !!this.el.closest('ion-item') || !!this.el.closest('ion-item-divider');
+    this.inheritedAttributes = inheritAttributes(this.el, ['aria-label']);
   }
   get hasIconOnly() {
     return !!this.el.querySelector('[slot="icon-only"]');
@@ -84,7 +86,7 @@ export class Button {
   }
   render() {
     const mode = getIonMode(this);
-    const { buttonType, type, disabled, rel, target, size, href, color, expand, hasIconOnly, shape, strong } = this;
+    const { buttonType, type, disabled, rel, target, size, href, color, expand, hasIconOnly, shape, strong, inheritedAttributes } = this;
     const finalSize = size === undefined && this.inItem ? 'small' : size;
     const TagType = href === undefined ? 'button' : 'a';
     const attrs = (TagType === 'button')
@@ -114,7 +116,7 @@ export class Button {
         'ion-activatable': true,
         'ion-focusable': true,
       }) },
-      h(TagType, Object.assign({}, attrs, { class: "button-native", part: "native", disabled: disabled, onFocus: this.onFocus, onBlur: this.onBlur }),
+      h(TagType, Object.assign({}, attrs, { class: "button-native", part: "native", disabled: disabled, onFocus: this.onFocus, onBlur: this.onBlur }, inheritedAttributes),
         h("span", { class: "button-inner" },
           h("slot", { name: "icon-only" }),
           h("slot", { name: "start" }),
@@ -153,7 +155,7 @@ export class Button {
         "text": "The color to use from your application's color palette.\nDefault options are: `\"primary\"`, `\"secondary\"`, `\"tertiary\"`, `\"success\"`, `\"warning\"`, `\"danger\"`, `\"light\"`, `\"medium\"`, and `\"dark\"`.\nFor more information on colors, see [theming](/docs/theming/basics)."
       },
       "attribute": "color",
-      "reflect": false
+      "reflect": true
     },
     "buttonType": {
       "type": "string",

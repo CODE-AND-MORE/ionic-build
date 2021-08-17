@@ -23,7 +23,7 @@ export declare class Router implements ComponentInterface {
    * Usually "hash-less" navigation works better for SEO and it's more user friendly too, but it might
    * requires additional server-side configuration in order to properly work.
    *
-   * On the otherside hash-navigation is much easier to deploy, it even works over the file protocol.
+   * On the other side hash-navigation is much easier to deploy, it even works over the file protocol.
    *
    * By default, this property is `true`, change to `false` to allow hash-less URLs.
    */

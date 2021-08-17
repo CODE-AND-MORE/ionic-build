@@ -90,7 +90,7 @@ export class Item {
     }
   }
   componentDidLoad() {
-    this.setMultipleInputs();
+    raf(() => this.setMultipleInputs());
   }
   // If the item contains multiple clickable elements and/or inputs, then the item
   // should not have a clickable input cover over the entire item to prevent
@@ -178,7 +178,8 @@ export class Item {
     this.itemStyles.forEach(value => {
       Object.assign(childStyles, value);
     });
-    return (h(Host, { "aria-disabled": disabled ? 'true' : null, class: Object.assign(Object.assign(Object.assign({}, childStyles), labelColorStyles), createColorClasses(this.color, {
+    const ariaDisabled = (disabled || childStyles['item-interactive-disabled']) ? 'true' : null;
+    return (h(Host, { "aria-disabled": ariaDisabled, class: Object.assign(Object.assign(Object.assign({}, childStyles), labelColorStyles), createColorClasses(this.color, {
         'item': true,
         [mode]: true,
         [`item-lines-${lines}`]: lines !== undefined,
@@ -194,7 +195,7 @@ export class Item {
           h("div", { class: "input-wrapper" },
             h("slot", null)),
           h("slot", { name: "end" }),
-          showDetail && h("ion-icon", { icon: detailIcon, lazy: false, class: "item-detail-icon", part: "detail-icon" }),
+          showDetail && h("ion-icon", { icon: detailIcon, lazy: false, class: "item-detail-icon", part: "detail-icon", "aria-hidden": "true" }),
           h("div", { class: "item-inner-highlight" })),
         canActivate && mode === 'md' && h("ion-ripple-effect", null)),
       h("div", { class: "item-highlight" })));
@@ -231,7 +232,7 @@ export class Item {
         "text": "The color to use from your application's color palette.\nDefault options are: `\"primary\"`, `\"secondary\"`, `\"tertiary\"`, `\"success\"`, `\"warning\"`, `\"danger\"`, `\"light\"`, `\"medium\"`, and `\"dark\"`.\nFor more information on colors, see [theming](/docs/theming/basics)."
       },
       "attribute": "color",
-      "reflect": false
+      "reflect": true
     },
     "button": {
       "type": "boolean",

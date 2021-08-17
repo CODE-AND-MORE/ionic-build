@@ -1,11 +1,11 @@
-import { r as registerInstance, e as createEvent, h, H as Host, i as getElement } from './index-e806d1f6.js';
-import { b as getIonMode } from './ionic-global-9d5c8ee3.js';
-import { a as addEventListener, h as clamp, f as findItemLabel, d as renderHiddenInput } from './helpers-90f46169.js';
-import { c as createAnimation } from './animation-54fe0237.js';
-import './hardware-back-button-389954a0.js';
-import { p as pickerController, B as BACKDROP, i as isCancel, e as prepareOverlay, d as present, f as dismiss, g as eventMethod, s as safeCall } from './overlays-7a1610a2.js';
-import { b as hapticSelectionChanged, h as hapticSelectionEnd, a as hapticSelectionStart } from './haptic-27b3f981.js';
+import { r as registerInstance, e as createEvent, h, H as Host, i as getElement } from './index-7a8b7a1c.js';
+import { b as getIonMode } from './ionic-global-63a97a32.js';
+import { a as addEventListener, j as clamp, h as findItemLabel, e as renderHiddenInput } from './helpers-dd7e4b7b.js';
+import { p as pickerController, B as BACKDROP, i as isCancel, e as prepareOverlay, d as present, f as dismiss, g as eventMethod, s as safeCall } from './overlays-e9ccff30.js';
 import { h as hostContext, g as getClassMap } from './theme-ff3fc52f.js';
+import { c as createAnimation } from './animation-096c6391.js';
+import { b as hapticSelectionChanged, h as hapticSelectionEnd, a as hapticSelectionStart } from './haptic-27b3f981.js';
+import './hardware-back-button-4a6b37fb.js';
 
 /**
  * Gets a date value given a format
@@ -938,7 +938,7 @@ const Datetime = class {
       label.id = labelId;
     }
     renderHiddenInput(true, el, this.name, this.value, this.disabled);
-    return (h(Host, { onClick: this.onClick, "aria-disabled": disabled ? 'true' : null, "aria-expanded": `${isExpanded}`, "aria-haspopup": "true", "aria-labelledby": labelId, class: {
+    return (h(Host, { onClick: this.onClick, "aria-disabled": disabled ? 'true' : null, "aria-expanded": `${isExpanded}`, "aria-haspopup": "true", "aria-labelledby": label ? labelId : null, class: {
         [mode]: true,
         'datetime-disabled': disabled,
         'datetime-readonly': readonly,
@@ -1219,7 +1219,7 @@ const PickerColumnCmp = class {
     }
     this.rotateFactor = pickerRotateFactor;
     this.scaleFactor = pickerScaleFactor;
-    this.gesture = (await import('./index-f49d994d.js')).createGesture({
+    this.gesture = (await import('./index-34cb2743.js')).createGesture({
       el: this.el,
       gestureName: 'picker-swipe',
       gesturePriority: 100,

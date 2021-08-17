@@ -444,7 +444,7 @@ AFTER:
       "optional": true,
       "docs": {
         "tags": [],
-        "text": "The content's id the menu should use."
+        "text": "The `id` of the main content. When using\na router this is typically `ion-router-outlet`.\nWhen not using a router, this is typically\nyour main view's `ion-content`. This is not the\nid of the `ion-content` inside of your `ion-menu`."
       },
       "attribute": "content-id",
       "reflect": true

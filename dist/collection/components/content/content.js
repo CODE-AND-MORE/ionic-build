@@ -17,6 +17,7 @@ export class Content {
     this.queued = false;
     this.cTop = -1;
     this.cBottom = -1;
+    this.isMainContent = true;
     // Detail is used in a hot loop in the scroll event, by allocating it here
     // V8 will be able to inline any read/write to it since it's a monomorphic class.
     // https://mrale.ph/blog/2015/01/11/whats-up-with-monomorphism.html
@@ -57,6 +58,9 @@ export class Content {
      * and start listening from (ionScroll), set this property to `true`.
      */
     this.scrollEvents = false;
+  }
+  connectedCallback() {
+    this.isMainContent = this.el.closest('ion-menu, ion-popover, ion-modal') === null;
   }
   disconnectedCallback() {
     this.onScrollEnd();
@@ -230,9 +234,10 @@ export class Content {
     }
   }
   render() {
-    const { scrollX, scrollY } = this;
+    const { isMainContent, scrollX, scrollY } = this;
     const mode = getIonMode(this);
     const forceOverscroll = this.shouldForceOverscroll();
+    const TagType = isMainContent ? 'main' : 'div';
     const transitionShadow = (mode === 'ios' && config.getBoolean('experimentalTransitionShadow', true));
     this.resize();
     return (h(Host, { class: createColorClasses(this.color, {
@@ -244,12 +249,12 @@ export class Content {
         '--offset-bottom': `${this.cBottom}px`,
       } },
       h("div", { id: "background-content", part: "background" }),
-      h("main", { class: {
+      h(TagType, { class: {
           'inner-scroll': true,
           'scroll-x': scrollX,
           'scroll-y': scrollY,
           'overscroll': (scrollX || scrollY) && forceOverscroll
-        }, ref: el => this.scrollEl = el, onScroll: (this.scrollEvents) ? ev => this.onScroll(ev) : undefined, part: "scroll" },
+        }, ref: (el) => this.scrollEl = el, onScroll: (this.scrollEvents) ? (ev) => this.onScroll(ev) : undefined, part: "scroll" },
         h("slot", null)),
       transitionShadow ? (h("div", { class: "transition-effect" },
         h("div", { class: "transition-cover" }),
@@ -285,7 +290,7 @@ export class Content {
         "text": "The color to use from your application's color palette.\nDefault options are: `\"primary\"`, `\"secondary\"`, `\"tertiary\"`, `\"success\"`, `\"warning\"`, `\"danger\"`, `\"light\"`, `\"medium\"`, and `\"dark\"`.\nFor more information on colors, see [theming](/docs/theming/basics)."
       },
       "attribute": "color",
-      "reflect": false
+      "reflect": true
     },
     "fullscreen": {
       "type": "boolean",

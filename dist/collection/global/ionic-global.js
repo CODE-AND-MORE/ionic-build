@@ -5,8 +5,11 @@ let defaultMode;
 export const getIonMode = (ref) => {
   return (ref && getMode(ref)) || defaultMode;
 };
-export default () => {
-  const doc = document;
+export const initialize = (userConfig = {}) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  const doc = window.document;
   const win = window;
   Context.config = config;
   const Ionic = win.Ionic = win.Ionic || {};
@@ -14,7 +17,7 @@ export default () => {
   setupPlatforms(win);
   // create the Ionic.config from raw config object (if it exists)
   // and convert Ionic.config into a ConfigApi that has a get() fn
-  const configObj = Object.assign(Object.assign(Object.assign(Object.assign({}, configFromSession(win)), { persistConfig: false }), Ionic.config), configFromURL(win));
+  const configObj = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, configFromSession(win)), { persistConfig: false }), Ionic.config), configFromURL(win)), userConfig);
   config.reset(configObj);
   if (config.getBoolean('persistConfig')) {
     saveConfig(win, configObj);
@@ -48,3 +51,4 @@ export default () => {
     return defaultMode;
   });
 };
+export default initialize;

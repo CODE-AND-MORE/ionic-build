@@ -86,6 +86,15 @@ export declare class Searchbar implements ComponentInterface {
    */
   showCancelButton: 'never' | 'focus' | 'always';
   /**
+   * Sets the behavior for the clear button. Defaults to `"focus"`.
+   * Setting to `"focus"` shows the clear button on focus if the
+   * input is not empty.
+   * Setting to `"never"` hides the clear button.
+   * Setting to `"always"` shows the clear button regardless
+   * of focus state, but only if the input is not empty.
+   */
+  showClearButton: 'never' | 'focus' | 'always';
+  /**
    * If `true`, enable spellcheck on the input.
    */
   spellcheck: boolean;
@@ -185,5 +194,12 @@ export declare class Searchbar implements ComponentInterface {
    * 2. `showCancelButton` is set to `focus`, and the searchbar has been focused.
    */
   private shouldShowCancelButton;
+  /**
+   * Determines whether or not the clear button should be visible onscreen.
+   * Clear button should be shown if one of two conditions applies:
+   * 1. `showClearButton` is set to `always`.
+   * 2. `showClearButton` is set to `focus`, and the searchbar has been focused.
+   */
+  private shouldShowClearButton;
   render(): any;
 }

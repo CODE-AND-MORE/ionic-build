@@ -4,6 +4,8 @@ import { Color, TabBarChangedEventDetail } from '../../interface';
  * @virtualProp {"ios" | "md"} mode - The mode determines which platform styles to use.
  */
 export declare class TabBar implements ComponentInterface {
+  private keyboardWillShowHandler?;
+  private keyboardWillHideHandler?;
   el: HTMLElement;
   keyboardVisible: boolean;
   /**
@@ -25,8 +27,8 @@ export declare class TabBar implements ComponentInterface {
   translucent: boolean;
   /** @internal */
   ionTabBarChanged: EventEmitter<TabBarChangedEventDetail>;
-  protected onKeyboardWillHide(): void;
-  protected onKeyboardWillShow(): void;
   componentWillLoad(): void;
+  connectedCallback(): void;
+  disconnectedCallback(): void;
   render(): any;
 }

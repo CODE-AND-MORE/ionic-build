@@ -1,3 +1,4 @@
+import { componentOnReady } from '../helpers';
 import { enableHideCaretOnScroll } from './hacks/hide-caret';
 import { enableInputBlurring } from './hacks/input-blurring';
 import { enableScrollAssist } from './hacks/scroll-assist';
@@ -17,9 +18,7 @@ export const startInputShims = (config) => {
   const hideCaretMap = new WeakMap();
   const scrollAssistMap = new WeakMap();
   const registerInput = async (componentEl) => {
-    if (componentEl.componentOnReady) {
-      await componentEl.componentOnReady();
-    }
+    await new Promise(resolve => componentOnReady(componentEl, resolve));
     const inputRoot = componentEl.shadowRoot || componentEl;
     const inputEl = inputRoot.querySelector('input') || inputRoot.querySelector('textarea');
     const scrollEl = componentEl.closest('ion-content');

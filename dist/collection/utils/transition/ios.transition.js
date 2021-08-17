@@ -9,7 +9,7 @@ export const shadow = (el) => {
 };
 const getLargeTitle = (refEl) => {
   const tabs = (refEl.tagName === 'ION-TABS') ? refEl : refEl.querySelector('ion-tabs');
-  const query = 'ion-header:not(.header-collapse-condense-inactive) ion-title.title-large';
+  const query = 'ion-content ion-header:not(.header-collapse-condense-inactive) ion-title.title-large';
   if (tabs != null) {
     const activeTab = tabs.querySelector('ion-tab:not(.tab-hidden), .ion-page:not(.ion-page-hidden)');
     return (activeTab != null) ? activeTab.querySelector(query) : null;

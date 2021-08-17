@@ -2,18 +2,18 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-const index$1 = require('./index-a35cc20f.js');
-const ionicGlobal = require('./ionic-global-75ba08dd.js');
-const helpers = require('./helpers-7e840ed2.js');
-const animation = require('./animation-9929f2ae.js');
-const index$2 = require('./index-3d9409db.js');
-const cubicBezier = require('./cubic-bezier-0b2ccc35.js');
-require('./gesture-controller-29adda71.js');
-const index = require('./index-98d43f07.js');
-require('./hardware-back-button-87eee3af.js');
-const overlays = require('./overlays-deffa27d.js');
+const index$1 = require('./index-a0a08b2a.js');
+const ionicGlobal = require('./ionic-global-06f21c1a.js');
+const frameworkDelegate = require('./framework-delegate-45524d8c.js');
+const overlays = require('./overlays-59863ad4.js');
 const theme = require('./theme-30b7a575.js');
-const frameworkDelegate = require('./framework-delegate-80fa7d45.js');
+const index$2 = require('./index-222357e4.js');
+const animation = require('./animation-13cbbb20.js');
+const cubicBezier = require('./cubic-bezier-0b2ccc35.js');
+const index = require('./index-a1dd5c93.js');
+const helpers = require('./helpers-d381ec4d.js');
+require('./hardware-back-button-148ce546.js');
+require('./gesture-controller-29adda71.js');
 
 // Defaults for the card swipe animation
 const SwipeToCloseDefaults = {
@@ -28,11 +28,11 @@ const createSwipeToCloseGesture = (el, animation, onDismiss) => {
       !target.closest) {
       return true;
     }
-    const content = target.closest('ion-content');
-    if (content === null) {
+    const contentOrFooter = target.closest('ion-content, ion-footer');
+    if (contentOrFooter === null) {
       return true;
     }
-    // Target is in the content so we don't start the gesture.
+    // Target is in the content or the footer so do not start the gesture.
     // We could be more nuanced here and allow it for content that
     // does not need to scroll.
     return false;

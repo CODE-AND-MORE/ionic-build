@@ -15,6 +15,7 @@ export declare class Content implements ComponentInterface {
   private cTop;
   private cBottom;
   private scrollEl;
+  private isMainContent;
   private detail;
   el: HTMLIonContentElement;
   /**
@@ -61,6 +62,7 @@ export declare class Content implements ComponentInterface {
    * Emitted when the scroll has ended.
    */
   ionScrollEnd: EventEmitter<ScrollBaseDetail>;
+  connectedCallback(): void;
   disconnectedCallback(): void;
   onAppLoad(): void;
   onClick(ev: Event): void;

@@ -44,8 +44,8 @@ export declare class BackButton implements ComponentInterface, ButtonInterface {
   componentWillLoad(): void;
   get backButtonIcon(): any;
   get backButtonText(): any;
-  get hasIconOnly(): boolean;
-  get rippleType(): "unbounded" | "bounded";
+  get hasIconOnly(): any;
+  get rippleType(): "bounded" | "unbounded";
   private onClick;
   render(): any;
 }

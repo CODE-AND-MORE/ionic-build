@@ -1,3 +1,4 @@
+import { componentOnReady } from '../../../utils/helpers';
 import { ROUTER_INTENT_NONE } from './constants';
 export const writeNavState = async (root, chain, direction, index, changed = false, animation) => {
   try {
@@ -7,7 +8,7 @@ export const writeNavState = async (root, chain, direction, index, changed = fal
     if (index >= chain.length || !outlet) {
       return changed;
     }
-    await outlet.componentOnReady();
+    await new Promise(resolve => componentOnReady(outlet, resolve));
     const route = chain[index];
     const result = await outlet.setRouteId(route.id, route.params, direction, animation);
     // if the outlet changed the page, reset navigation to neutral (no direction)
@@ -71,5 +72,5 @@ const searchNavNode = (root) => {
     return root;
   }
   const outlet = root.querySelector(QUERY);
-  return outlet ? outlet : undefined;
+  return outlet !== null && outlet !== void 0 ? outlet : undefined;
 };

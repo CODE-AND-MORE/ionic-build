@@ -1,15 +1,15 @@
-import { r as registerInstance, e as createEvent, c as writeTask, h, H as Host, i as getElement } from './index-e806d1f6.js';
-import { b as getIonMode, c as config } from './ionic-global-9d5c8ee3.js';
-import { h as clamp } from './helpers-90f46169.js';
-import { c as createAnimation } from './animation-54fe0237.js';
-import { e as deepReady } from './index-1eeeab2e.js';
-import { g as getTimeGivenProgression } from './cubic-bezier-eea9a7a9.js';
-import './gesture-controller-31cb6bb9.js';
-import { createGesture } from './index-f49d994d.js';
-import './hardware-back-button-389954a0.js';
-import { B as BACKDROP, e as prepareOverlay, d as present, h as activeAnimations, f as dismiss, g as eventMethod } from './overlays-7a1610a2.js';
+import { r as registerInstance, e as createEvent, c as writeTask, h, H as Host, i as getElement } from './index-7a8b7a1c.js';
+import { b as getIonMode, c as config } from './ionic-global-63a97a32.js';
+import { a as attachComponent, d as detachComponent } from './framework-delegate-4392cd63.js';
+import { B as BACKDROP, e as prepareOverlay, d as present, h as activeAnimations, f as dismiss, g as eventMethod } from './overlays-e9ccff30.js';
 import { g as getClassMap } from './theme-ff3fc52f.js';
-import { a as attachComponent, d as detachComponent } from './framework-delegate-4584ab5a.js';
+import { e as deepReady } from './index-931440b1.js';
+import { c as createAnimation } from './animation-096c6391.js';
+import { g as getTimeGivenProgression } from './cubic-bezier-eea9a7a9.js';
+import { createGesture } from './index-34cb2743.js';
+import { j as clamp } from './helpers-dd7e4b7b.js';
+import './hardware-back-button-4a6b37fb.js';
+import './gesture-controller-31cb6bb9.js';
 
 // Defaults for the card swipe animation
 const SwipeToCloseDefaults = {
@@ -24,11 +24,11 @@ const createSwipeToCloseGesture = (el, animation, onDismiss) => {
       !target.closest) {
       return true;
     }
-    const content = target.closest('ion-content');
-    if (content === null) {
+    const contentOrFooter = target.closest('ion-content, ion-footer');
+    if (contentOrFooter === null) {
       return true;
     }
-    // Target is in the content so we don't start the gesture.
+    // Target is in the content or the footer so do not start the gesture.
     // We could be more nuanced here and allow it for content that
     // does not need to scroll.
     return false;

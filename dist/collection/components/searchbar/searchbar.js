@@ -60,6 +60,15 @@ export class Searchbar {
      */
     this.showCancelButton = 'never';
     /**
+     * Sets the behavior for the clear button. Defaults to `"focus"`.
+     * Setting to `"focus"` shows the clear button on focus if the
+     * input is not empty.
+     * Setting to `"never"` hides the clear button.
+     * Setting to `"always"` shows the clear button regardless
+     * of focus state, but only if the input is not empty.
+     */
+    this.showClearButton = 'focus';
+    /**
      * If `true`, enable spellcheck on the input.
      */
     this.spellcheck = false;
@@ -74,7 +83,7 @@ export class Searchbar {
     /**
      * Clears the input field and triggers the control change.
      */
-    this.onClearInput = (ev) => {
+    this.onClearInput = (ev, shouldFocus) => {
       this.ionClear.emit();
       if (ev) {
         ev.preventDefault();
@@ -87,6 +96,15 @@ export class Searchbar {
         if (value !== '') {
           this.value = '';
           this.ionInput.emit();
+          /**
+           * When tapping clear button
+           * ensure input is focused after
+           * clearing input so users
+           * can quickly start typing.
+           */
+          if (shouldFocus && !this.focused) {
+            this.setFocus();
+          }
         }
       }, 16 * 4);
     };
@@ -290,6 +308,18 @@ export class Searchbar {
     }
     return true;
   }
+  /**
+   * Determines whether or not the clear button should be visible onscreen.
+   * Clear button should be shown if one of two conditions applies:
+   * 1. `showClearButton` is set to `always`.
+   * 2. `showClearButton` is set to `focus`, and the searchbar has been focused.
+   */
+  shouldShowClearButton() {
+    if ((this.showClearButton === 'never') || (this.showClearButton === 'focus' && !this.focused)) {
+      return false;
+    }
+    return true;
+  }
   render() {
     const { cancelButtonText } = this;
     const animated = this.animated && config.getBoolean('animated', true);
@@ -309,13 +339,14 @@ export class Searchbar {
         'searchbar-has-value': this.hasValue(),
         'searchbar-left-aligned': this.shouldAlignLeft,
         'searchbar-has-focus': this.focused,
+        'searchbar-should-show-clear': this.shouldShowClearButton(),
         'searchbar-should-show-cancel': this.shouldShowCancelButton()
       }) },
       h("div", { class: "searchbar-input-container" },
         h("input", { "aria-label": "search text", disabled: this.disabled, ref: el => this.nativeInput = el, class: "searchbar-input", inputMode: this.inputmode, enterKeyHint: this.enterkeyhint, onInput: this.onInput, onBlur: this.onBlur, onFocus: this.onFocus, placeholder: this.placeholder, type: this.type, value: this.getValue(), autoComplete: this.autocomplete, autoCorrect: this.autocorrect, spellcheck: this.spellcheck }),
         mode === 'md' && cancelButton,
         h("ion-icon", { "aria-hidden": "true", mode: mode, icon: searchIcon, lazy: false, class: "searchbar-search-icon" }),
-        h("button", { "aria-label": "reset", type: "button", "no-blur": true, class: "searchbar-clear-button", onMouseDown: this.onClearInput, onTouchStart: this.onClearInput },
+        h("button", { "aria-label": "reset", type: "button", "no-blur": true, class: "searchbar-clear-button", onMouseDown: ev => this.onClearInput(ev, true), onTouchStart: ev => this.onClearInput(ev, true) },
           h("ion-icon", { "aria-hidden": "true", mode: mode, icon: clearIcon, lazy: false, class: "searchbar-clear-icon" }))),
       mode === 'ios' && cancelButton));
   }
@@ -350,7 +381,7 @@ export class Searchbar {
         "text": "The color to use from your application's color palette.\nDefault options are: `\"primary\"`, `\"secondary\"`, `\"tertiary\"`, `\"success\"`, `\"warning\"`, `\"danger\"`, `\"light\"`, `\"medium\"`, and `\"dark\"`.\nFor more information on colors, see [theming](/docs/theming/basics)."
       },
       "attribute": "color",
-      "reflect": false
+      "reflect": true
     },
     "animated": {
       "type": "boolean",
@@ -586,6 +617,24 @@ export class Searchbar {
       "attribute": "show-cancel-button",
       "reflect": false,
       "defaultValue": "'never'"
+    },
+    "showClearButton": {
+      "type": "string",
+      "mutable": false,
+      "complexType": {
+        "original": "'never' | 'focus' | 'always'",
+        "resolved": "\"always\" | \"focus\" | \"never\"",
+        "references": {}
+      },
+      "required": false,
+      "optional": false,
+      "docs": {
+        "tags": [],
+        "text": "Sets the behavior for the clear button. Defaults to `\"focus\"`.\nSetting to `\"focus\"` shows the clear button on focus if the\ninput is not empty.\nSetting to `\"never\"` hides the clear button.\nSetting to `\"always\"` shows the clear button regardless\nof focus state, but only if the input is not empty."
+      },
+      "attribute": "show-clear-button",
+      "reflect": false,
+      "defaultValue": "'focus'"
     },
     "spellcheck": {
       "type": "boolean",

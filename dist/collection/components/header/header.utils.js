@@ -52,7 +52,7 @@ export const setToolbarBackgroundOpacity = (toolbar, opacity) => {
     toolbar.background.style.setProperty('--opacity', opacity.toString());
   }
 };
-const handleToolbarBorderIntersection = (ev, mainHeaderIndex) => {
+const handleToolbarBorderIntersection = (ev, mainHeaderIndex, scrollTop) => {
   if (!ev[0].isIntersecting) {
     return;
   }
@@ -61,8 +61,13 @@ const handleToolbarBorderIntersection = (ev, mainHeaderIndex) => {
    * does not always reset the scrollTop position to 0 when letting go. It will
    * set to 1 once the rubber band effect has ended. This causes the background to
    * appear slightly on certain app setups.
+   *
+   * Additionally, we check if user is rubber banding (scrolling is negative)
+   * as this can mean they are using pull to refresh. Once the refresher starts,
+   * the content is transformed which can cause the intersection observer to erroneously
+   * fire here as well.
    */
-  const scale = (ev[0].intersectionRatio > 0.9) ? 0 : ((1 - ev[0].intersectionRatio) * 100) / 75;
+  const scale = (ev[0].intersectionRatio > 0.9 || scrollTop <= 0) ? 0 : ((1 - ev[0].intersectionRatio) * 100) / 75;
   mainHeaderIndex.toolbars.forEach(toolbar => {
     setToolbarBackgroundOpacity(toolbar, (scale === 1) ? undefined : scale);
   });
@@ -72,9 +77,10 @@ const handleToolbarBorderIntersection = (ev, mainHeaderIndex) => {
  * and show the primary toolbar content. If the toolbars are not intersecting,
  * hide the primary toolbar content and show the scrollable toolbar content
  */
-export const handleToolbarIntersection = (ev, mainHeaderIndex, scrollHeaderIndex) => {
+export const handleToolbarIntersection = (ev, mainHeaderIndex, scrollHeaderIndex, scrollEl) => {
   writeTask(() => {
-    handleToolbarBorderIntersection(ev, mainHeaderIndex);
+    const scrollTop = scrollEl.scrollTop;
+    handleToolbarBorderIntersection(ev, mainHeaderIndex, scrollTop);
     const event = ev[0];
     const intersection = event.intersectionRect;
     const intersectionArea = intersection.width * intersection.height;
@@ -100,7 +106,7 @@ export const handleToolbarIntersection = (ev, mainHeaderIndex, scrollHeaderIndex
        * only Safari + CSS Animations.
        */
       const hasValidIntersection = (intersection.x === 0 && intersection.y === 0) || (intersection.width !== 0 && intersection.height !== 0);
-      if (hasValidIntersection) {
+      if (hasValidIntersection && scrollTop > 0) {
         setHeaderActive(mainHeaderIndex);
         setHeaderActive(scrollHeaderIndex, false);
         setToolbarBackgroundOpacity(mainHeaderIndex.toolbars[0]);

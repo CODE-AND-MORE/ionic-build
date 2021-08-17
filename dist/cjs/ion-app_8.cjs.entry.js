@@ -2,13 +2,13 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-const index = require('./index-a35cc20f.js');
-const ionicGlobal = require('./ionic-global-75ba08dd.js');
-const helpers = require('./helpers-7e840ed2.js');
-const index$1 = require('./index-3d9409db.js');
-const cubicBezier = require('./cubic-bezier-0b2ccc35.js');
+const index = require('./index-a0a08b2a.js');
+const ionicGlobal = require('./ionic-global-06f21c1a.js');
 const theme = require('./theme-30b7a575.js');
-const frameworkDelegate = require('./framework-delegate-80fa7d45.js');
+const helpers = require('./helpers-d381ec4d.js');
+const cubicBezier = require('./cubic-bezier-0b2ccc35.js');
+const frameworkDelegate = require('./framework-delegate-45524d8c.js');
+const index$1 = require('./index-222357e4.js');
 
 const appCss = "html.plt-mobile ion-app{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}html.plt-mobile ion-app [contenteditable]{-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text}ion-app.force-statusbar-padding{--ion-safe-area-top:20px}";
 
@@ -18,19 +18,23 @@ const App = class {
   }
   componentDidLoad() {
     {
-      rIC(() => {
+      rIC(async () => {
         const isHybrid = ionicGlobal.isPlatform(window, 'hybrid');
         if (!ionicGlobal.config.getBoolean('_testing')) {
-          Promise.resolve().then(function () { return require('./tap-click-0cba0040.js'); }).then(module => module.startTapClick(ionicGlobal.config));
+          Promise.resolve().then(function () { return require('./tap-click-08c2217f.js'); }).then(module => module.startTapClick(ionicGlobal.config));
         }
         if (ionicGlobal.config.getBoolean('statusTap', isHybrid)) {
-          Promise.resolve().then(function () { return require('./status-tap-ef4d51bc.js'); }).then(module => module.startStatusTap());
+          Promise.resolve().then(function () { return require('./status-tap-480ef38b.js'); }).then(module => module.startStatusTap());
         }
         if (ionicGlobal.config.getBoolean('inputShims', needInputShims())) {
-          Promise.resolve().then(function () { return require('./input-shims-36f80af9.js'); }).then(module => module.startInputShims(ionicGlobal.config));
+          Promise.resolve().then(function () { return require('./input-shims-23e0b8a3.js'); }).then(module => module.startInputShims(ionicGlobal.config));
         }
+        const hardwareBackButtonModule = await Promise.resolve().then(function () { return require('./hardware-back-button-148ce546.js'); });
         if (ionicGlobal.config.getBoolean('hardwareBackButton', isHybrid)) {
-          Promise.resolve().then(function () { return require('./hardware-back-button-87eee3af.js'); }).then(module => module.startHardwareBackButton());
+          hardwareBackButtonModule.startHardwareBackButton();
+        }
+        else {
+          hardwareBackButtonModule.blockHardwareBackButton();
         }
         if (typeof window !== 'undefined') {
           Promise.resolve().then(function () { return require('./keyboard-4704570e.js'); }).then(module => module.startKeyboardAssist(window));
@@ -109,6 +113,7 @@ const Content = class {
     this.queued = false;
     this.cTop = -1;
     this.cBottom = -1;
+    this.isMainContent = true;
     // Detail is used in a hot loop in the scroll event, by allocating it here
     // V8 will be able to inline any read/write to it since it's a monomorphic class.
     // https://mrale.ph/blog/2015/01/11/whats-up-with-monomorphism.html
@@ -149,6 +154,9 @@ const Content = class {
      * and start listening from (ionScroll), set this property to `true`.
      */
     this.scrollEvents = false;
+  }
+  connectedCallback() {
+    this.isMainContent = this.el.closest('ion-menu, ion-popover, ion-modal') === null;
   }
   disconnectedCallback() {
     this.onScrollEnd();
@@ -322,9 +330,10 @@ const Content = class {
     }
   }
   render() {
-    const { scrollX, scrollY } = this;
+    const { isMainContent, scrollX, scrollY } = this;
     const mode = ionicGlobal.getIonMode(this);
     const forceOverscroll = this.shouldForceOverscroll();
+    const TagType = isMainContent ? 'main' : 'div';
     const transitionShadow = (mode === 'ios' && ionicGlobal.config.getBoolean('experimentalTransitionShadow', true));
     this.resize();
     return (index.h(index.Host, { class: theme.createColorClasses(this.color, {
@@ -334,12 +343,12 @@ const Content = class {
       }), style: {
         '--offset-top': `${this.cTop}px`,
         '--offset-bottom': `${this.cBottom}px`,
-      } }, index.h("div", { id: "background-content", part: "background" }), index.h("main", { class: {
+      } }, index.h("div", { id: "background-content", part: "background" }), index.h(TagType, { class: {
         'inner-scroll': true,
         'scroll-x': scrollX,
         'scroll-y': scrollY,
         'overscroll': (scrollX || scrollY) && forceOverscroll
-      }, ref: el => this.scrollEl = el, onScroll: (this.scrollEvents) ? ev => this.onScroll(ev) : undefined, part: "scroll" }, index.h("slot", null)), transitionShadow ? (index.h("div", { class: "transition-effect" }, index.h("div", { class: "transition-cover" }), index.h("div", { class: "transition-shadow" }))) : null, index.h("slot", { name: "fixed" })));
+      }, ref: (el) => this.scrollEl = el, onScroll: (this.scrollEvents) ? (ev) => this.onScroll(ev) : undefined, part: "scroll" }, index.h("slot", null)), transitionShadow ? (index.h("div", { class: "transition-effect" }, index.h("div", { class: "transition-cover" }), index.h("div", { class: "transition-shadow" }))) : null, index.h("slot", { name: "fixed" })));
   }
   get el() { return index.getElement(this); }
 };
@@ -481,7 +490,7 @@ const setToolbarBackgroundOpacity = (toolbar, opacity) => {
     toolbar.background.style.setProperty('--opacity', opacity.toString());
   }
 };
-const handleToolbarBorderIntersection = (ev, mainHeaderIndex) => {
+const handleToolbarBorderIntersection = (ev, mainHeaderIndex, scrollTop) => {
   if (!ev[0].isIntersecting) {
     return;
   }
@@ -490,8 +499,13 @@ const handleToolbarBorderIntersection = (ev, mainHeaderIndex) => {
    * does not always reset the scrollTop position to 0 when letting go. It will
    * set to 1 once the rubber band effect has ended. This causes the background to
    * appear slightly on certain app setups.
+   *
+   * Additionally, we check if user is rubber banding (scrolling is negative)
+   * as this can mean they are using pull to refresh. Once the refresher starts,
+   * the content is transformed which can cause the intersection observer to erroneously
+   * fire here as well.
    */
-  const scale = (ev[0].intersectionRatio > 0.9) ? 0 : ((1 - ev[0].intersectionRatio) * 100) / 75;
+  const scale = (ev[0].intersectionRatio > 0.9 || scrollTop <= 0) ? 0 : ((1 - ev[0].intersectionRatio) * 100) / 75;
   mainHeaderIndex.toolbars.forEach(toolbar => {
     setToolbarBackgroundOpacity(toolbar, (scale === 1) ? undefined : scale);
   });
@@ -501,9 +515,10 @@ const handleToolbarBorderIntersection = (ev, mainHeaderIndex) => {
  * and show the primary toolbar content. If the toolbars are not intersecting,
  * hide the primary toolbar content and show the scrollable toolbar content
  */
-const handleToolbarIntersection = (ev, mainHeaderIndex, scrollHeaderIndex) => {
+const handleToolbarIntersection = (ev, mainHeaderIndex, scrollHeaderIndex, scrollEl) => {
   index.writeTask(() => {
-    handleToolbarBorderIntersection(ev, mainHeaderIndex);
+    const scrollTop = scrollEl.scrollTop;
+    handleToolbarBorderIntersection(ev, mainHeaderIndex, scrollTop);
     const event = ev[0];
     const intersection = event.intersectionRect;
     const intersectionArea = intersection.width * intersection.height;
@@ -529,7 +544,7 @@ const handleToolbarIntersection = (ev, mainHeaderIndex, scrollHeaderIndex) => {
        * only Safari + CSS Animations.
        */
       const hasValidIntersection = (intersection.x === 0 && intersection.y === 0) || (intersection.width !== 0 && intersection.height !== 0);
-      if (hasValidIntersection) {
+      if (hasValidIntersection && scrollTop > 0) {
         setHeaderActive(mainHeaderIndex);
         setHeaderActive(scrollHeaderIndex, false);
         setToolbarBackgroundOpacity(mainHeaderIndex.toolbars[0]);
@@ -646,7 +661,7 @@ const Header = class {
      * as well as progressively showing/hiding the main header
      * border as the top-most toolbar collapses or expands.
      */
-    const toolbarIntersection = (ev) => { handleToolbarIntersection(ev, mainHeaderIndex, scrollHeaderIndex); };
+    const toolbarIntersection = (ev) => { handleToolbarIntersection(ev, mainHeaderIndex, scrollHeaderIndex, this.scrollEl); };
     this.intersectionObserver = new IntersectionObserver(toolbarIntersection, { root: contentEl, threshold: [0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] });
     this.intersectionObserver.observe(scrollHeaderIndex.toolbars[scrollHeaderIndex.toolbars.length - 1].el);
     /**
@@ -692,7 +707,7 @@ const RouterOutlet = class {
     this.ionNavWillLoad = index.createEvent(this, "ionNavWillLoad", 7);
     this.ionNavWillChange = index.createEvent(this, "ionNavWillChange", 3);
     this.ionNavDidChange = index.createEvent(this, "ionNavDidChange", 3);
-    this.animationEnabled = true;
+    this.gestureOrAnimationInProgress = false;
     /**
      * The mode determines which platform styles to use.
      */
@@ -708,11 +723,16 @@ const RouterOutlet = class {
     }
   }
   async connectedCallback() {
-    this.gesture = (await Promise.resolve().then(function () { return require('./swipe-back-bd7d380f.js'); })).createSwipeBackGesture(this.el, () => !!this.swipeHandler && this.swipeHandler.canStart() && this.animationEnabled, () => this.swipeHandler && this.swipeHandler.onStart(), step => this.ani && this.ani.progressStep(step), (shouldComplete, step, dur) => {
+    const onStart = () => {
+      this.gestureOrAnimationInProgress = true;
+      if (this.swipeHandler) {
+        this.swipeHandler.onStart();
+      }
+    };
+    this.gesture = (await Promise.resolve().then(function () { return require('./swipe-back-e654d7fd.js'); })).createSwipeBackGesture(this.el, () => !this.gestureOrAnimationInProgress && !!this.swipeHandler && this.swipeHandler.canStart(), () => onStart(), step => this.ani && this.ani.progressStep(step), (shouldComplete, step, dur) => {
       if (this.ani) {
-        this.animationEnabled = false;
         this.ani.onFinish(() => {
-          this.animationEnabled = true;
+          this.gestureOrAnimationInProgress = false;
           if (this.swipeHandler) {
             this.swipeHandler.onEnd(shouldComplete);
           }
@@ -735,6 +755,9 @@ const RouterOutlet = class {
           newStepValue += cubicBezier.getTimeGivenProgression([0, 0], [0.32, 0.72], [0, 1], [1, 1], step)[0];
         }
         this.ani.progressEnd(shouldComplete ? 1 : 0, newStepValue, dur);
+      }
+      else {
+        this.gestureOrAnimationInProgress = false;
       }
     });
     this.swipeHandlerChanged();
@@ -808,7 +831,34 @@ const RouterOutlet = class {
       animated,
       enteringEl,
       leavingEl, baseEl: el, progressCallback: (opts.progressAnimation
-        ? ani => this.ani = ani
+        ? ani => {
+          /**
+           * Because this progress callback is called asynchronously
+           * it is possible for the gesture to start and end before
+           * the animation is ever set. In that scenario, we should
+           * immediately call progressEnd so that the transition promise
+           * resolves and the gesture does not get locked up.
+           */
+          if (ani !== undefined && !this.gestureOrAnimationInProgress) {
+            this.gestureOrAnimationInProgress = true;
+            ani.onFinish(() => {
+              this.gestureOrAnimationInProgress = false;
+              if (this.swipeHandler) {
+                this.swipeHandler.onEnd(false);
+              }
+            }, { oneTimeCallback: true });
+            /**
+             * Playing animation to beginning
+             * with a duration of 0 prevents
+             * any flickering when the animation
+             * is later cleaned up.
+             */
+            ani.progressEnd(0, 0, 0);
+          }
+          else {
+            this.ani = ani;
+          }
+        }
         : undefined) }, opts), { animationBuilder }));
     // emit nav changed event
     this.ionNavDidChange.emit();
@@ -833,7 +883,7 @@ const RouterOutlet = class {
 };
 RouterOutlet.style = routeOutletCss;
 
-const titleIosCss = ":host{--color:initial;display:-ms-flexbox;display:flex;-ms-flex:1;flex:1;-ms-flex-align:center;align-items:center;-webkit-transform:translateZ(0);transform:translateZ(0);color:var(--color)}:host(.ion-color){color:var(--ion-color-base)}.toolbar-title{display:block;width:100%;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;pointer-events:auto}:host(.title-small) .toolbar-title{white-space:normal}:host{left:0;top:0;padding-left:90px;padding-right:90px;padding-top:0;padding-bottom:0;position:absolute;width:100%;height:100%;-webkit-transform:translateZ(0);transform:translateZ(0);font-size:17px;font-weight:600;text-align:center;-webkit-box-sizing:border-box;box-sizing:border-box;pointer-events:none}:host-context([dir=rtl]){left:unset;right:unset;right:0}@supports ((-webkit-margin-start: 0) or (margin-inline-start: 0)) or (-webkit-margin-start: 0){:host{padding-left:unset;padding-right:unset;-webkit-padding-start:90px;padding-inline-start:90px;-webkit-padding-end:90px;padding-inline-end:90px}}:host(.title-small){padding-left:9px;padding-right:9px;padding-top:6px;padding-bottom:16px;position:relative;font-size:13px;font-weight:normal}@supports ((-webkit-margin-start: 0) or (margin-inline-start: 0)) or (-webkit-margin-start: 0){:host(.title-small){padding-left:unset;padding-right:unset;-webkit-padding-start:9px;padding-inline-start:9px;-webkit-padding-end:9px;padding-inline-end:9px}}:host(.title-large){padding-left:16px;padding-right:16px;padding-top:0;padding-bottom:0;-webkit-transform-origin:left center;transform-origin:left center;bottom:0;-ms-flex-align:end;align-items:flex-end;min-width:100%;padding-bottom:6px;font-size:34px;font-weight:700;text-align:start}@supports ((-webkit-margin-start: 0) or (margin-inline-start: 0)) or (-webkit-margin-start: 0){:host(.title-large){padding-left:unset;padding-right:unset;-webkit-padding-start:16px;padding-inline-start:16px;-webkit-padding-end:16px;padding-inline-end:16px}}:host-context([dir=rtl]):host(.title-large),:host-context([dir=rtl]).title-large{-webkit-transform-origin:right center;transform-origin:right center}:host(.title-large.ion-cloned-element){--color:var(--ion-text-color, #000)}:host(.title-large) .toolbar-title{-webkit-transform-origin:inherit;transform-origin:inherit}:host-context([dir=rtl]):host(.title-large) .toolbar-title,:host-context([dir=rtl]).title-large .toolbar-title{-webkit-transform-origin:calc(100% - inherit);transform-origin:calc(100% - inherit)}";
+const titleIosCss = ":host{--color:initial;display:-ms-flexbox;display:flex;-ms-flex:1;flex:1;-ms-flex-align:center;align-items:center;-webkit-transform:translateZ(0);transform:translateZ(0);color:var(--color)}:host(.ion-color){color:var(--ion-color-base)}.toolbar-title{display:block;width:100%;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;pointer-events:auto}:host(.title-small) .toolbar-title{white-space:normal}:host{left:0;top:0;padding-left:90px;padding-right:90px;padding-top:var(--padding-top);padding-bottom:var(--padding-bottom);position:absolute;width:100%;height:100%;-webkit-transform:translateZ(0);transform:translateZ(0);font-size:17px;font-weight:600;text-align:center;-webkit-box-sizing:border-box;box-sizing:border-box;pointer-events:none}:host-context([dir=rtl]){left:unset;right:unset;right:0}@supports ((-webkit-margin-start: 0) or (margin-inline-start: 0)) or (-webkit-margin-start: 0){:host{padding-left:unset;padding-right:unset;-webkit-padding-start:90px;padding-inline-start:90px;-webkit-padding-end:90px;padding-inline-end:90px}}:host(.title-small){padding-left:9px;padding-right:9px;padding-top:6px;padding-bottom:16px;position:relative;font-size:13px;font-weight:normal}@supports ((-webkit-margin-start: 0) or (margin-inline-start: 0)) or (-webkit-margin-start: 0){:host(.title-small){padding-left:unset;padding-right:unset;-webkit-padding-start:9px;padding-inline-start:9px;-webkit-padding-end:9px;padding-inline-end:9px}}:host(.title-large){padding-left:16px;padding-right:16px;padding-top:0;padding-bottom:0;-webkit-transform-origin:left center;transform-origin:left center;bottom:0;-ms-flex-align:end;align-items:flex-end;min-width:100%;padding-bottom:6px;font-size:34px;font-weight:700;text-align:start}@supports ((-webkit-margin-start: 0) or (margin-inline-start: 0)) or (-webkit-margin-start: 0){:host(.title-large){padding-left:unset;padding-right:unset;-webkit-padding-start:16px;padding-inline-start:16px;-webkit-padding-end:16px;padding-inline-end:16px}}:host(.title-large.title-rtl){-webkit-transform-origin:right center;transform-origin:right center}:host(.title-large.ion-cloned-element){--color:var(--ion-text-color, #000)}:host(.title-large) .toolbar-title{-webkit-transform-origin:inherit;transform-origin:inherit}:host-context([dir=rtl]):host(.title-large) .toolbar-title,:host-context([dir=rtl]).title-large .toolbar-title{-webkit-transform-origin:calc(100% - inherit);transform-origin:calc(100% - inherit)}";
 
 const titleMdCss = ":host{--color:initial;display:-ms-flexbox;display:flex;-ms-flex:1;flex:1;-ms-flex-align:center;align-items:center;-webkit-transform:translateZ(0);transform:translateZ(0);color:var(--color)}:host(.ion-color){color:var(--ion-color-base)}.toolbar-title{display:block;width:100%;text-overflow:ellipsis;white-space:nowrap;overflow:hidden;pointer-events:auto}:host(.title-small) .toolbar-title{white-space:normal}:host{padding-left:20px;padding-right:20px;padding-top:0;padding-bottom:0;font-size:20px;font-weight:500;letter-spacing:0.0125em}@supports ((-webkit-margin-start: 0) or (margin-inline-start: 0)) or (-webkit-margin-start: 0){:host{padding-left:unset;padding-right:unset;-webkit-padding-start:20px;padding-inline-start:20px;-webkit-padding-end:20px;padding-inline-end:20px}}:host(.title-small){width:100%;height:100%;font-size:15px;font-weight:normal}";
 
@@ -863,6 +913,7 @@ const ToolbarTitle = class {
     return (index.h(index.Host, { class: theme.createColorClasses(this.color, {
         [mode]: true,
         [`title-${size}`]: true,
+        'title-rtl': document.dir === 'rtl'
       }) }, index.h("div", { class: "toolbar-title" }, index.h("slot", null))));
   }
   get el() { return index.getElement(this); }

@@ -1,7 +1,7 @@
 import { Component, Element, Event, Host, Method, Prop, State, Watch, h, readTask, writeTask } from '@stencil/core';
 import { getIonMode } from '../../global/ionic-global';
 import { getTimeGivenProgression } from '../../utils/animation/cubic-bezier';
-import { clamp, getElementRoot, raf } from '../../utils/helpers';
+import { clamp, componentOnReady, getElementRoot, raf } from '../../utils/helpers';
 import { hapticImpact } from '../../utils/native/haptic';
 import { createPullingAnimation, createSnapBackAnimation, getRefresherAnimationType, handleScrollWhilePulling, handleScrollWhileRefreshing, setSpinnerOpacity, shouldUseNativeRefresher, transitionEndAsync, translateElement } from './refresher.utils';
 export class Refresher {
@@ -78,8 +78,8 @@ export class Refresher {
       this.gesture.enable(!this.disabled);
     }
   }
-  checkNativeRefresher() {
-    const useNativeRefresher = shouldUseNativeRefresher(this.el, getIonMode(this));
+  async checkNativeRefresher() {
+    const useNativeRefresher = await shouldUseNativeRefresher(this.el, getIonMode(this));
     if (useNativeRefresher && !this.nativeRefresher) {
       const contentEl = this.el.closest('ion-content');
       this.setupNativeRefresher(contentEl);
@@ -248,15 +248,13 @@ export class Refresher {
         if (!ev.data.didStart) {
           ev.data.didStart = true;
           this.state = 2 /* Pulling */;
-          writeTask(() => {
-            const animationType = getRefresherAnimationType(contentEl);
-            const animation = createPullingAnimation(animationType, pullingRefresherIcon);
-            ev.data.animation = animation;
-            this.scrollEl.style.setProperty('--overflow', 'hidden');
-            animation.progressStart(false, 0);
-            this.ionStart.emit();
-            this.animations.push(animation);
-          });
+          writeTask(() => this.scrollEl.style.setProperty('--overflow', 'hidden'));
+          const animationType = getRefresherAnimationType(contentEl);
+          const animation = createPullingAnimation(animationType, pullingRefresherIcon, this.el);
+          ev.data.animation = animation;
+          animation.progressStart(false, 0);
+          this.ionStart.emit();
+          this.animations.push(animation);
           return;
         }
         // Since we are using an easing curve, slow the gesture tracking down a bit
@@ -299,6 +297,14 @@ export class Refresher {
     if (this.scrollListenerCallback || !contentEl || this.nativeRefresher || !this.scrollEl) {
       return;
     }
+    /**
+     * If using non-native refresher before make sure
+     * we clean up any old CSS. This can happen when
+     * a user manually calls the refresh method in a
+     * component create callback before the native
+     * refresher is setup.
+     */
+    this.setCss(0, '', false, '');
     this.nativeRefresher = true;
     const pullingSpinner = this.el.querySelector('ion-refresher-content .refresher-pulling ion-spinner');
     const refreshingSpinner = this.el.querySelector('ion-refresher-content .refresher-refreshing ion-spinner');
@@ -322,10 +328,10 @@ export class Refresher {
       console.error('<ion-refresher> must be used inside an <ion-content>');
       return;
     }
-    await contentEl.componentOnReady();
+    await new Promise(resolve => componentOnReady(contentEl, resolve));
     this.scrollEl = await contentEl.getScrollElement();
     this.backgroundContentEl = getElementRoot(contentEl).querySelector('#background-content');
-    if (shouldUseNativeRefresher(this.el, getIonMode(this))) {
+    if (await shouldUseNativeRefresher(this.el, getIonMode(this))) {
       this.setupNativeRefresher(contentEl);
     }
     else {

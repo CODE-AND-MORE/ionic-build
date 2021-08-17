@@ -149,7 +149,10 @@ export class ActionSheet {
         h("div", { class: "action-sheet-container" },
           h("div", { class: "action-sheet-group", ref: el => this.groupEl = el },
             this.header !== undefined &&
-              h("div", { class: "action-sheet-title" },
+              h("div", { class: {
+                  'action-sheet-title': true,
+                  'action-sheet-has-sub-title': this.subHeader !== undefined
+                } },
                 this.header,
                 this.subHeader && h("div", { class: "action-sheet-sub-title" }, this.subHeader)),
             buttons.map(b => h("button", { type: "button", class: buttonClass(b), onClick: () => this.buttonClick(b) },
